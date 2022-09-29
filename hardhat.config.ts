@@ -8,33 +8,23 @@ require("hardhat-contract-sizer");
 require("dotenv").config();
 require("solidity-coverage");
 
+const ALCHEMY_GOERLI_API_KEY_URL = process.env.ALCHEMY_GOERLI_API_KEY_URL;
+const ACCOUNT_PRIVATE_KEY = process.env.ACCOUNT_PRIVATE_KEY;
+const API_TOKEN = process.env.API_TOKEN;
+
 // You have to export an object to set up your config
 // This object can have the following optional entries:
 // defaultNetwork, networks, solc, and paths.
 // Go to https://buidler.dev/config/ to learn more
 module.exports = {
-  mocha: {
-    timeout: 100000000,
+  networks: {
+    goerli: {
+      url: ALCHEMY_GOERLI_API_KEY_URL,
+      accounts: [ACCOUNT_PRIVATE_KEY],
+    },
   },
   etherscan: {
-    apiKey: process.env.ETHERSCAN_API_KEY,
-  },
-  networks: {
-    hardhat: {
-      blockGasLimit: 20000000,
-      timeout: 120000,
-      gas: "auto",
-    },
-    localhost: {
-      timeout: 8000000,
-    },
-    kovan: {
-      url: process.env.KOVAN_URL,
-      accounts: [process.env.SECRET],
-      blockGasLimit: 200000000000,
-      gasPrice: 10000000000,
-      timeout: 90000,
-    },
+    apiKey: API_TOKEN,
   },
   gasReporter: {
     currency: "USD",

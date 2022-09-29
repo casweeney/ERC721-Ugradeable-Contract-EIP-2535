@@ -23,7 +23,9 @@ export async function deployDiamond() {
   const Diamond = await ethers.getContractFactory("Diamond");
   const diamond = await Diamond.deploy(
     contractOwner.address,
-    diamondCutFacet.address
+    diamondCutFacet.address,
+    "Cas Diamon NFT",
+    "CDN"
   );
   await diamond.deployed();
   console.log("Diamond deployed:", diamond.address);
@@ -39,7 +41,7 @@ export async function deployDiamond() {
   // deploy facets
   console.log("");
   console.log("Deploying facets");
-  const FacetNames = ["DiamondLoupeFacet", "OwnershipFacet"];
+  const FacetNames = ["DiamondLoupeFacet", "OwnershipFacet", "CasNFT"];
   const cut = [];
   for (const FacetName of FacetNames) {
     const Facet = await ethers.getContractFactory(FacetName);
@@ -56,12 +58,15 @@ export async function deployDiamond() {
   // upgrade diamond with facets
   console.log("");
   console.log("Diamond Cut:", cut);
+
   const diamondCut = (await ethers.getContractAt(
     "IDiamondCut",
     diamond.address
   )) as DiamondCutFacet;
+
   let tx;
   let receipt: ContractReceipt;
+
   // call to init function
   let functionCall = diamondInit.interface.encodeFunctionData("init");
   tx = await diamondCut.diamondCut(cut, diamondInit.address, functionCall);
@@ -72,6 +77,11 @@ export async function deployDiamond() {
   }
   console.log("Completed diamond cut");
   DiamondAddress = diamond.address;
+
+  const nft = await ethers.getContractAt("CasNFT", diamond.address);
+  const name = await nft.name();
+
+  console.log(name);
 }
 
 // We recommend this pattern to be able to use async/await everywhere
